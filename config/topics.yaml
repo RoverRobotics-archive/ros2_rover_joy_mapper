@@ -1,0 +1,12 @@
+xbox_mapper:
+  topic: /cmd
+  type: Twist
+  data:
+    linear:
+      x: LEFT_JOY_VERT
+      y: 0
+      z: 0
+    angular:
+      x: 0
+      y: 0
+      z: RIGHT_JOY_HORIZ
