@@ -5,8 +5,8 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from sensor_msgs.msg import Joy
 import yaml
-from utils.Controller import Controller, Axis, Button
-from utils.Topics import Topics, TwistTopic
+from Controller import Controller, Axis, Button
+from Topics import Topics, TwistTopic
 
 class Mapper(Node):
     def __init__(self, joy_topic, controller=None, topics=None, name="joy_mapper_node"):
@@ -26,10 +26,7 @@ class Mapper(Node):
         elif not self._topics:
             self.get_logger().fatal('No topics specified')
             self.shutdown()
-        self.get_logger().info(str(msg.buttons))
-        self.get_logger().info(str(msg.axes))
         self._controller.update_states(**{'axes': msg.axes, 'buttons': msg.buttons})
-        self.get_logger().info(str(self._controller))
 
         self._topics.publish(self._controller)
 
@@ -50,8 +47,8 @@ def open_yaml(file_name):
 
 def main(args=None):
     rclpy.init(args=args)
-    controller = open_yaml('/home/nickp/dev/hilbert-ws/src/openrover/openrover_joy_mapper/config/controller.yaml')
-    topics = open_yaml('/home/nickp/dev/hilbert-ws/src/openrover/openrover_joy_mapper/config/topics.yaml')
+    controller = open_yaml('/home/ros/demo_ws/src/openrover/openrover_joy_mapper_throttle/config/controller.yaml')
+    topics = open_yaml('/home/ros/demo_ws/src/openrover/openrover_joy_mapper_throttle/config/topics.yaml')
     mapper = Mapper('/joy')
     mapper.configure_controller_mapping(controller)
     mapper.register_topics(topics)
