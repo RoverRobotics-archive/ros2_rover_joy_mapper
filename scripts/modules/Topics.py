@@ -61,7 +61,7 @@ class TwistTopic:
         except:
             self.publish_multiple_halts = True
 
-        self._publisher = node.create_publisher(Twist, self.topic)
+        self._publisher = node.create_publisher(Twist, self.topic, 10)
 
     def publish(self, controller: Controller):
         msg = Twist()
@@ -80,7 +80,7 @@ class TwistTopic:
         msg.angular.x = self._ang_throttle_coef * self._convert_input(self.roll, controller)
         msg.angular.y = self._ang_throttle_coef * self._convert_input(self.pitch, controller)
         msg.angular.z = self._ang_throttle_coef * self._convert_input(self.yaw, controller)
-        if msg == self._HALT:
+        if msg == self._HALT and False: # TODO: This makes it so halts are always published
             if self.publish_multiple_halts or not self._last_message_was_halt:
                 self._publisher.publish(msg)
             self._last_message_was_halt = True
