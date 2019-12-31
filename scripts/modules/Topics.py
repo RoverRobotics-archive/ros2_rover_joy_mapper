@@ -34,7 +34,6 @@ class TwistTopic:
 
         self.lin_throttle = params['throttle']['lin_throttle_ctrl']
         self.ang_throttle = params['throttle']['ang_throttle_ctrl']
-        self.turbo = params['turbo']
         self._is_turbo = False
         self._before_turbo = 1.0
 
@@ -92,12 +91,14 @@ class TwistTopic:
         param_type = type(param)
         if param_type == str:
             return float(controller[param].state)
+        elif param_type == list:
+            return float(sum([controller[val].state for val in param]))
         elif param_type == int or param_type == float:
             return float(param)
         elif param is None:
             return float(0)
         else:
-            self._node.get_logger().warn('Parameter "%s." should be numeric or None.' % str(param))
+            self._node.get_logger().warn(f'Parameter "%s." should be numeric or None.' % str(param))
             return float(0)
 
     def _set_lin_throttle(self, throttle_input):
@@ -114,11 +115,3 @@ class TwistTopic:
                 self._ang_throttle_coef = 0
         self._last_ang_throttle_input = throttle_input
 
-    # def _set_turbo(self, turbo):
-    #     if turbo and not self._is_turbo:
-    #         self._before_turbo = self._throttle_coef
-    #         self._throttle_coef = 3.0
-    #         self._is_turbo = True
-    #     elif turbo and self._is_turbo:
-    #         self._throttle_coef = self._before_turbo
-    #         self._is_turbo = False

@@ -15,5 +15,7 @@ xbox_mapper:
       z: 0
     angular:
       x: 0
-      y: RIGHT_TRIGGER
+      y:
+        - LEFT_TRIGGER
+        - RIGHT_TRIGGER
       z: RIGHT_JOY_HORIZ
