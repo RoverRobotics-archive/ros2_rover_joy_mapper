@@ -70,8 +70,6 @@ class TwistTopic:
         self._set_ang_throttle(ang_throttle_input)
         # turbo = self._convert_input(self.turbo, controller)
         # self._set_turbo(turbo)
-        self._node.get_logger().info(f'Linear Throttle : %f' % self._lin_throttle_coef)
-        self._node.get_logger().info(f'Angular Throttle : %f' % self._ang_throttle_coef)
 
         msg.linear.x = self._lin_throttle_coef * self._convert_input(self.x, controller)
         msg.linear.y = self._lin_throttle_coef * self._convert_input(self.y, controller)

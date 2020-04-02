@@ -9,32 +9,34 @@ from modules.Controller import Controller, Axis, Button
 from modules.Topics import Topics, TwistTopic
 
 class Mapper(Node):
-    def __init__(self, joy_topic, controller=None, topics=None, name="joy_mapper_node"):
+    def __init__(self, joy_topic, name="joy_mapper_node"):
         super().__init__(name)
         self._name = name
         self._joy_topic = joy_topic
         self._publish_topics = []
 
         self._joy_subscriber = self.create_subscription(Joy, joy_topic, self._joy_callback, 10)
-        self._controller = self.configure_controller_mapping(controller) if controller else None
-        self._topics = self.register_topics(topics) if topics else None
+        controller = self.declare_parameter("controller").value
+        topics = self.declare_parameter("topics").value
+        self._controller = self._configure_controller_mapping(open_yaml(controller)) if controller else None
+        self._topics = self._register_topics(open_yaml(topics)) if topics else None
 
     def _joy_callback(self, msg: Joy):
         if not self._controller:
             self.get_logger().fatal('Axis and Button mappings must be defined.')
-            self.shutdown()
+            rclpy.shutdown()
         elif not self._topics:
             self.get_logger().fatal('No topics specified')
-            self.shutdown()
+            rclpy.shutdown()
         self._controller.update_states(**{'axes': msg.axes, 'buttons': msg.buttons})
 
         self._topics.publish(self._controller)
 
-    def configure_controller_mapping(self, button_mappings):
-        self._controller = Controller(button_mappings)
+    def _configure_controller_mapping(self, button_mappings: dict):
+        return Controller(button_mappings)
 
-    def register_topics(self, topics: dict):
-        self._topics = Topics(self, topics)
+    def _register_topics(self, topics: dict):
+        return Topics(self, topics)
 
     def update_topics(self):
         for topic in self._topics:
@@ -47,11 +49,7 @@ def open_yaml(file_name):
 
 def main(args=None):
     rclpy.init(args=args)
-    controller = open_yaml('/home/nickp/Desktop/poultry_ws/src/joy_mapper/config/controller.yaml')
-    topics = open_yaml('/home/nickp/Desktop/poultry_ws/src/joy_mapper/config/topics.yaml')
     mapper = Mapper('/joy')
-    mapper.configure_controller_mapping(controller)
-    mapper.register_topics(topics)
     rclpy.spin(mapper)
 
 if __name__ == '__main__':

@@ -22,10 +22,10 @@ def generate_launch_description():
         SetEnvironmentVariable('RCUTILS_CONSOLE_STDOUT_LINE_BUFFERED', '1'),
         Node(
             package='openrover_joy_mapper', node_executable='mapper_node.py', output='screen',
-            # parameters=[controller_config, topics_config]
+            parameters=[{"controller": str(controller_config), "topics": str(topics_config)}]
         ),
         Node(
             package='joy', node_executable='joy_node', output='screen',
-            # parameters=[controller_config, topics_config]
+            parameters=[{'dev': '/dev/input/jsX'}]
         ),
     ])
